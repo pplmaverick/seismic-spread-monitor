@@ -1,11 +1,35 @@
 # Seismic Privacy Spread Monitor
 
-A privacy-preserving spread monitoring contract deployed on Seismic devnet. It leverages Seismic's shielded types to protect each user's strategy parameters — keeping trading pair addresses and alert thresholds private on-chain.
+![Seismic Devnet](https://img.shields.io/badge/Seismic_Devnet-5124-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
+
+A privacy-preserving spread monitoring contract deployed on Seismic devnet. It leverages Seismic's shielded types to protect each user's strategy parameters — keeping trading pair addresses and alert thresholds encrypted on-chain, invisible to external observers.
+
+**Deployed on Seismic Devnet**
+
+| Field | Value |
+|---|---|
+| Network | Seismic devnet |
+| Chain ID | 5124 |
+| RPC | `https://node-2.seismicdev.net/rpc` |
+| Contract | `0xE7e8863d840fcE15C40B68C21518fb5bDeF2d0c4` |
+| Explorer | [View Contract](https://explorer.seismicdev.net/address/0xE7e8863d840fcE15C40B68C21518fb5bDeF2d0c4) (`0xE7e8863d840fcE15C40B68C21518fb5bDeF2d0c4`) |
+
+## Why Seismic-Native
+
+On a standard EVM chain, all contract storage is publicly readable — any on-chain spread monitoring strategy leaks the user's trading pair and threshold to competitors. Seismic's shielded types encrypt this data at the VM level, with no off-chain trusted execution environment required.
+
+| Design concern | Standard EVM approach | Seismic-native approach |
+|---|---|---|
+| Hide trading pair address | Store off-chain or use a centralized relayer | `saddress` — encrypted address, hidden from all external observers |
+| Hide alert threshold | Commit-reveal scheme with on-chain exposure during reveal | `suint256` — encrypted uint256, readable only by the owner |
+| Verify spread alert without leaking strategy | Reveal threshold publicly to compare | `checkSpread(suint256)` — compares current spread against private threshold, emits only the boolean result |
+| Read own private data | Query public storage | `getMyThreshold()` — requires a signed call via `seismic-viem`; `msg.sender` is verified before decrypting |
 
 ## Core Functions
 
 | Function | Description |
-|----------|-------------|
+|---|---|
 | `setStrategy(saddress pair, suint256 threshold)` | Register a trading pair and alert threshold; parameters are encrypted on-chain |
 | `checkSpread(suint256 currentSpread)` | Compare the current spread against the private threshold and emit `SpreadAlert(user, triggered)` |
 | `getMyThreshold()` | Let the strategy owner read their own threshold (requires a signed call) |
@@ -14,30 +38,22 @@ A privacy-preserving spread monitoring contract deployed on Seismic devnet. It l
 
 ## Tech Stack
 
-- **Seismic Solidity** — EVM-compatible contract language with native shielded type support
-- **sFoundry (sforge / scast)** — Seismic's fork of the Foundry toolkit
-- **`suint256`** — An encrypted uint256 readable only by its owner
-- **`saddress`** — An encrypted address hidden from external observers
-
-## Deployment
-
-| Field | Value |
-|-------|-------|
-| Network | Seismic devnet |
-| RPC | `https://node-2.seismicdev.net/rpc` |
-| Chain ID | 5124 |
-| Contract | `0xE7e8863d840fcE15C40B68C21518fb5bDeF2d0c4` |
-| Explorer | [View Contract](https://explorer-2.seismicdev.net/address/0xE7e8863d840fcE15C40B68C21518fb5bDeF2d0c4) |
+| Layer | Technology |
+|---|---|
+| Contract language | Seismic Solidity — EVM-compatible with native shielded type support |
+| Toolchain | sFoundry (`sforge` / `scast`) — Seismic's fork of Foundry |
+| Encrypted types | `suint256` — encrypted uint256; `saddress` — encrypted address |
+| Client interaction | `seismic-viem` — required for signed calls to read private state |
 
 ## E2E Test Results
 
 | Step | Call | Tx Hash | Result |
-|------|------|---------|--------|
-| 1 | `setStrategy(0xDeaDBeef..., 100)` | [0x34f74f...](https://explorer-2.seismicdev.net/tx/0x34f74fbddf33b86bc30ef79e3d6c88f8dd3627d10f14b78fb4047b93b745cd95) | status 0x1 ✓ |
-| 2 | `checkSpread(150)` | [0x55d0c0...](https://explorer-2.seismicdev.net/tx/0x55d0c0fca7ed293b014afcd3eeef436a5a0a55c90d46f2ad15d0f13334118bae) | `SpreadAlert(user, triggered=true)` ✓ |
+|---|---|---|---|
+| 1 | `setStrategy(0xDeaDBeef..., 100)` | `0x34f74f...` | status `0x1` ✓ |
+| 2 | `checkSpread(150)` | `0x55d0c0...` | `SpreadAlert(user, triggered=true)` ✓ |
 | 3 | `getMyThreshold()` | signed call (off-chain) | returns `100` ✓ |
 
-## Local Deployment
+## Quick Start
 
 ```bash
 # Install sFoundry
@@ -56,8 +72,54 @@ sforge build
 bash script/deploy.sh
 ```
 
-## Notes
+## Implementation Notes
 
-- `external` functions cannot directly return `suint256`; cast to `uint256` first
-- Comparing `suint256` values produces an `sbool`, which must be explicitly cast with `bool(...)`
-- `getMyThreshold()` must be called via `seismic-viem`'s `signedCall`; `scast call` cannot correctly forward `msg.sender`
+**`suint256` return values**
+
+`external` functions cannot directly return `suint256`; cast to `uint256` first before returning to the caller.
+
+**`sbool` comparisons**
+
+Comparing `suint256` values produces an `sbool`, which must be explicitly cast with `bool(...)` before use in control flow.
+
+**Reading private state**
+
+`getMyThreshold()` must be called via `seismic-viem`'s `signedCall`. Using `scast call` cannot correctly forward `msg.sender`, so the ownership check fails and the decrypted value is not returned.
+
+## Known Limitations
+
+These are known design tradeoffs in the current implementation, planned for resolution before mainnet deployment.
+
+| Issue | Description | Fix |
+|---|---|---|
+| `SpreadAlert` side-channel leak | `currentSpread` is passed publicly + `triggered` is emitted publicly — an observer can binary-search to infer the private threshold | Remove public event; switch to off-chain notification (n8n listener) |
+| `isStrategyActive` metadata leak | Anyone can enumerate which addresses are using the service | Add `require(msg.sender == target)` — users can only query their own status |
+| `deactivate` centralization | Owner can forcibly deactivate any user's strategy | Restrict to user-only; remove owner override |
+
+## Roadmap
+
+**✅ M1 — Devnet Deployment (completed)**
+- Privacy-preserving spread monitor with `saddress` + `suint256` shielded types
+- E2E tested: setStrategy → checkSpread → getMyThreshold
+- Deployed to Seismic devnet
+
+**⬜ M2 — Hardening (pre-mainnet)**
+- Fix known limitations: side-channel leak, metadata leak, centralized deactivate
+- Add `test/` directory with sforge unit tests
+- Frontend UI with `seismic-viem` signed call UX
+- Live DEX price feed integration (replace manual `checkSpread` input)
+
+**⬜ M3 — Mainnet**
+- Deploy to Seismic Mainnet when available
+- Multi-pair strategy support per user
+- Historical alert log (on-chain record of triggered spreads)
+
+## Developer
+
+GitHub: [pplmaverick](https://github.com/pplmaverick)
+Wallet: `0xed2B...78F5` — deployed on Seismic Devnet
+
+## License
+
+MIT
+
