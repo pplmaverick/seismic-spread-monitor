@@ -1,63 +1,63 @@
 # Seismic Privacy Spread Monitor
 
-在 Seismic devnet 上部署的隱私版價差監控合約，利用 Seismic 的 shielded 型別保護每位用戶的策略參數，避免交易對地址與閾值洩漏至鏈上。
+A privacy-preserving spread monitoring contract deployed on Seismic devnet. It leverages Seismic's shielded types to protect each user's strategy parameters — keeping trading pair addresses and alert thresholds private on-chain.
 
-## 核心功能
+## Core Functions
 
-| 函式 | 說明 |
-|------|------|
-| `setStrategy(saddress pair, suint256 threshold)` | 設定監控的交易對與觸發閾值，參數加密上鏈 |
-| `checkSpread(suint256 currentSpread)` | 傳入當前價差，與私密閾值比對，emit `SpreadAlert(user, triggered)` |
-| `getMyThreshold()` | 策略擁有者讀取自己的閾值（需 signed call） |
-| `isStrategyActive(address)` | 查詢任意用戶的策略啟動狀態（公開） |
-| `deactivate(address)` | Owner 停用任意用戶的策略 |
+| Function | Description |
+|----------|-------------|
+| `setStrategy(saddress pair, suint256 threshold)` | Register a trading pair and alert threshold; parameters are encrypted on-chain |
+| `checkSpread(suint256 currentSpread)` | Compare the current spread against the private threshold and emit `SpreadAlert(user, triggered)` |
+| `getMyThreshold()` | Let the strategy owner read their own threshold (requires a signed call) |
+| `isStrategyActive(address)` | Check whether any address has an active strategy (public) |
+| `deactivate(address)` | Owner-only: deactivate any user's strategy |
 
-## 技術
+## Tech Stack
 
-- **Seismic Solidity** — 支援 shielded 型別的 EVM 相容合約語言
-- **sFoundry（sforge / scast）** — Seismic 版 Foundry 工具鏈
-- **`suint256`** — 加密的 uint256，只有擁有者可讀取
-- **`saddress`** — 加密的 address，對外不可見
+- **Seismic Solidity** — EVM-compatible contract language with native shielded type support
+- **sFoundry (sforge / scast)** — Seismic's fork of the Foundry toolkit
+- **`suint256`** — An encrypted uint256 readable only by its owner
+- **`saddress`** — An encrypted address hidden from external observers
 
-## 部署資訊
+## Deployment
 
-| 項目 | 值 |
-|------|-----|
-| 網路 | Seismic devnet |
+| Field | Value |
+|-------|-------|
+| Network | Seismic devnet |
 | RPC | `https://node-2.seismicdev.net/rpc` |
 | Chain ID | 5124 |
-| 合約地址 | `0xE7e8863d840fcE15C40B68C21518fb5bDeF2d0c4` |
-| Explorer | [查看合約](https://explorer-2.seismicdev.net/address/0xE7e8863d840fcE15C40B68C21518fb5bDeF2d0c4) |
+| Contract | `0xE7e8863d840fcE15C40B68C21518fb5bDeF2d0c4` |
+| Explorer | [View Contract](https://explorer-2.seismicdev.net/address/0xE7e8863d840fcE15C40B68C21518fb5bDeF2d0c4) |
 
-## E2E 測試結果
+## E2E Test Results
 
-| 步驟 | 呼叫 | Tx Hash | 結果 |
-|------|------|---------|------|
+| Step | Call | Tx Hash | Result |
+|------|------|---------|--------|
 | 1 | `setStrategy(0xDeaDBeef..., 100)` | [0x34f74f...](https://explorer-2.seismicdev.net/tx/0x34f74fbddf33b86bc30ef79e3d6c88f8dd3627d10f14b78fb4047b93b745cd95) | status 0x1 ✓ |
 | 2 | `checkSpread(150)` | [0x55d0c0...](https://explorer-2.seismicdev.net/tx/0x55d0c0fca7ed293b014afcd3eeef436a5a0a55c90d46f2ad15d0f13334118bae) | `SpreadAlert(user, triggered=true)` ✓ |
-| 3 | `getMyThreshold()` | signed call（不上鏈） | 回傳 `100` ✓ |
+| 3 | `getMyThreshold()` | signed call (off-chain) | returns `100` ✓ |
 
-## 本地部署
+## Local Deployment
 
 ```bash
-# 安裝 sFoundry
+# Install sFoundry
 curl -L \
   -H "Accept: application/vnd.github.v3.raw" \
   "https://api.github.com/repos/SeismicSystems/seismic-foundry/contents/sfoundryup/install?ref=seismic" | bash
 source ~/.zshenv && sfoundryup
 
-# 建立 .env
-echo "PRIVATE_KEY=0x你的私鑰" > .env
+# Create .env
+echo "PRIVATE_KEY=0xYOUR_PRIVATE_KEY" > .env
 
-# 編譯
+# Compile
 sforge build
 
-# 部署
+# Deploy
 bash script/deploy.sh
 ```
 
-## 注意事項
+## Notes
 
-- `external` 函式不能直接回傳 `suint256`，須 cast 成 `uint256`
-- `suint256` 比較產生 `sbool`，需明確轉型 `bool(...)`
-- `getMyThreshold()` 須透過 `seismic-viem` 的 `signedCall` 呼叫，`scast call` 無法正確傳遞 `msg.sender`
+- `external` functions cannot directly return `suint256`; cast to `uint256` first
+- Comparing `suint256` values produces an `sbool`, which must be explicitly cast with `bool(...)`
+- `getMyThreshold()` must be called via `seismic-viem`'s `signedCall`; `scast call` cannot correctly forward `msg.sender`
