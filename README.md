@@ -86,6 +86,47 @@ Comparing `suint256` values produces an `sbool`, which must be explicitly cast w
 
 `getMyThreshold()` must be called via `seismic-viem`'s `signedCall`. Using `scast call` cannot correctly forward `msg.sender`, so the ownership check fails and the decrypted value is not returned.
 
+## Architecture
+
+### Architecture Diagram
+
+```
+┌─────────────────────────────────────────┐
+│                  Client                  │
+│  .env (PRIVATE_KEY)                     │
+│  scast / seismic-viem                   │
+│  script/deploy.sh  script/interact.sh   │
+└───────────────┬─────────────────────────┘
+                │ JSON-RPC
+                │ https://node-2.seismicdev.net/rpc
+                ▼
+┌─────────────────────────────────────────┐
+│         Seismic Devnet (Chain ID 5124)   │
+│                                         │
+│  ┌───────────────────────────────────┐  │
+│  │      SpreadMonitor Contract       │  │
+│  │  0xE7e8863d...bDeF2d0c4           │  │
+│  │                                   │  │
+│  │  strategies[addr] → {             │  │
+│  │    pair:      saddress (encrypted) │  │
+│  │    threshold: suint256 (encrypted) │  │
+│  │    isActive:  bool    (public)    │  │
+│  │  }                                │  │
+│  │                                   │  │
+│  │  emit SpreadAlert(user, triggered) │  │
+│  └───────────────────────────────────┘  │
+│                                         │
+│  Seismic VM handles encryption below    │
+│  the EVM execution layer                │
+└─────────────────────────────────────────┘
+```
+
+### Data Flow
+
+- **`setStrategy(saddress pair, suint256 threshold)`** — Encrypts and stores trading pair address and alert threshold on-chain; only the caller can read them back.
+- **`checkSpread(suint256 currentSpread)`** — Compares current spread against encrypted threshold inside the Seismic VM; emits `SpreadAlert(user, triggered)`.
+- **`getMyThreshold()`** — Returns decrypted threshold to the caller only; must use `seismic-viem` `signedCall` (plain `eth_call` returns zero for `msg.sender`).
+
 ## Known Limitations
 
 These are known design tradeoffs in the current implementation, planned for resolution before mainnet deployment.
