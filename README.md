@@ -47,11 +47,14 @@ On a standard EVM chain, all contract storage is publicly readable — any on-ch
 
 ## E2E Test Results
 
+Tested on Seismic Testnet against contract `0xBdC53E50b1167cE1199bFaD54A034f7ab1741051`.
+
 | Step | Call | Tx Hash | Result |
 |---|---|---|---|
-| 1 | `setStrategy(0xDeaDBeef..., 100)` | `0x34f74f...` | status `0x1` ✓ |
-| 2 | `checkSpread(150)` | `0x55d0c0...` | `SpreadAlert(user, triggered=true)` ✓ |
-| 3 | `getMyThreshold()` | signed call (off-chain) | returns `100` ✓ |
+| 1 | `setStrategy(0x000...001, 100)` | [`0xed09904a...`](https://seismic-testnet.socialscan.io/tx/0xed09904a09bfb6ec35eac94d65c799063585089a5d315580171cba8a3372d1fb) | status `0x1` ✓ |
+| 2 | `checkSpread(50)` | [`0x50d0da03...`](https://seismic-testnet.socialscan.io/tx/0x50d0da038070993925d0505f1b3fc163d9f2504231af828fe75f2799d2aabc04) | `SpreadAlert(user, triggered=false)` ✓ |
+| 3 | `checkSpread(100)` | [`0xeee9af3b...`](https://seismic-testnet.socialscan.io/tx/0xeee9af3b5e0e6b3729a1673d8fa05dcd8236db78576a3ca7d3b09d136630a0ac) | `SpreadAlert(user, triggered=true)` ✓ |
+| 4 | `checkSpread(200)` | [`0xb2fc3f5c...`](https://seismic-testnet.socialscan.io/tx/0xb2fc3f5c6073af983647442edf53f263a5ecf58c7aebd78c826c7938ff7bffe1) | `SpreadAlert(user, triggered=true)` ✓ |
 
 ## Quick Start
 
