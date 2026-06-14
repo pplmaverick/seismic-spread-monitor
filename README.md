@@ -12,8 +12,8 @@ A privacy-preserving spread monitoring contract deployed on Seismic Testnet. It 
 | Network | Seismic Testnet |
 | Chain ID | 5124 |
 | RPC | `https://gcp-2.seismictest.net/rpc` |
-| Contract | `0x072A3A0C04Cf8CDcaf5B4A73a4Ed4fF5A841531f` |
-| Explorer | [View Contract](https://seismic-testnet.socialscan.io/address/0x072A3A0C04Cf8CDcaf5B4A73a4Ed4fF5A841531f) (`0x072A3A0C04Cf8CDcaf5B4A73a4Ed4fF5A841531f`) |
+| Contract | `0xBdC53E50b1167cE1199bFaD54A034f7ab1741051` |
+| Explorer | [View Contract](https://seismic-testnet.socialscan.io/address/0xBdC53E50b1167cE1199bFaD54A034f7ab1741051) (`0xBdC53E50b1167cE1199bFaD54A034f7ab1741051`) |
 
 ## Why Seismic-Native
 
@@ -105,7 +105,7 @@ Comparing `suint256` values produces an `sbool`, which must be explicitly cast w
 │                                         │
 │  ┌───────────────────────────────────┐  │
 │  │      SpreadMonitor Contract       │  │
-│  │  0x072A3A0C...841531f             │  │
+│  │  0xBdC53E50...b1741051            │  │
 │  │                                   │  │
 │  │  strategies[addr] → {             │  │
 │  │    pair:      saddress (encrypted) │  │

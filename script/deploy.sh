@@ -23,6 +23,7 @@ DEPLOY_OUTPUT=$(sforge create \
     --rpc-url "$RPC_URL" \
     --private-key "$PRIVATE_KEY" \
     --broadcast \
+    --gas-limit 3000000 \
     "$CONTRACT_PATH")
 
 CONTRACT_ADDRESS=$(echo "$DEPLOY_OUTPUT" | grep "Deployed to:" | awk '{print $3}')

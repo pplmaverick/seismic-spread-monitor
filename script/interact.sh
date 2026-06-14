@@ -14,7 +14,7 @@ if [ -z "$PRIVATE_KEY" ]; then
 fi
 
 RPC_URL="https://gcp-2.seismictest.net/rpc"
-CONTRACT="0x072A3A0C04Cf8CDcaf5B4A73a4Ed4fF5A841531f"
+CONTRACT="0xBdC53E50b1167cE1199bFaD54A034f7ab1741051"
 SCAST="$HOME/.seismic/bin/scast"
 
 # 用一個假的 pair address（私密欄位，對鏈上不可見）
