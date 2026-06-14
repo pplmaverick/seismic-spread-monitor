@@ -1,19 +1,19 @@
 # Seismic Privacy Spread Monitor
 
-![Seismic Devnet](https://img.shields.io/badge/Seismic_Devnet-5124-blue)
+![Seismic Testnet](https://img.shields.io/badge/Seismic_Testnet-5124-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
-A privacy-preserving spread monitoring contract deployed on Seismic devnet. It leverages Seismic's shielded types to protect each user's strategy parameters — keeping trading pair addresses and alert thresholds encrypted on-chain, invisible to external observers.
+A privacy-preserving spread monitoring contract deployed on Seismic Testnet. It leverages Seismic's shielded types to protect each user's strategy parameters — keeping trading pair addresses and alert thresholds encrypted on-chain, invisible to external observers.
 
-**Deployed on Seismic Devnet**
+**Deployed on Seismic Testnet**
 
 | Field | Value |
 |---|---|
-| Network | Seismic devnet |
+| Network | Seismic Testnet |
 | Chain ID | 5124 |
-| RPC | `https://node-2.seismicdev.net/rpc` |
-| Contract | `0xE7e8863d840fcE15C40B68C21518fb5bDeF2d0c4` |
-| Explorer | [View Contract](https://explorer.seismicdev.net/address/0xE7e8863d840fcE15C40B68C21518fb5bDeF2d0c4) (`0xE7e8863d840fcE15C40B68C21518fb5bDeF2d0c4`) |
+| RPC | `https://gcp-2.seismictest.net/rpc` |
+| Contract | `0x072A3A0C04Cf8CDcaf5B4A73a4Ed4fF5A841531f` |
+| Explorer | [View Contract](https://seismic-testnet.socialscan.io/address/0x072A3A0C04Cf8CDcaf5B4A73a4Ed4fF5A841531f) (`0x072A3A0C04Cf8CDcaf5B4A73a4Ed4fF5A841531f`) |
 
 ## Why Seismic-Native
 
@@ -98,14 +98,14 @@ Comparing `suint256` values produces an `sbool`, which must be explicitly cast w
 │  script/deploy.sh  script/interact.sh   │
 └───────────────┬─────────────────────────┘
                 │ JSON-RPC
-                │ https://node-2.seismicdev.net/rpc
+                │ https://gcp-2.seismictest.net/rpc
                 ▼
 ┌─────────────────────────────────────────┐
-│         Seismic Devnet (Chain ID 5124)   │
+│        Seismic Testnet (Chain ID 5124)   │
 │                                         │
 │  ┌───────────────────────────────────┐  │
 │  │      SpreadMonitor Contract       │  │
-│  │  0xE7e8863d...bDeF2d0c4           │  │
+│  │  0x072A3A0C...841531f             │  │
 │  │                                   │  │
 │  │  strategies[addr] → {             │  │
 │  │    pair:      saddress (encrypted) │  │
@@ -139,10 +139,10 @@ These are known design tradeoffs in the current implementation, planned for reso
 
 ## Roadmap
 
-**✅ M1 — Devnet Deployment (completed)**
+**✅ M1 — Testnet Deployment (completed)**
 - Privacy-preserving spread monitor with `saddress` + `suint256` shielded types
 - E2E tested: setStrategy → checkSpread → getMyThreshold
-- Deployed to Seismic devnet
+- Deployed to Seismic Testnet
 
 **⬜ M2 — Hardening (pre-mainnet)**
 - Fix known limitations: side-channel leak, metadata leak, centralized deactivate
@@ -158,7 +158,7 @@ These are known design tradeoffs in the current implementation, planned for reso
 ## Developer
 
 GitHub: [pplmaverick](https://github.com/pplmaverick)
-Wallet: `0xed2B...78F5` — deployed on Seismic Devnet
+Wallet: `0xed2B...78F5` — deployed on Seismic Testnet
 
 ## License
 

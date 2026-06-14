@@ -14,10 +14,10 @@ if [ -z "$PRIVATE_KEY" ]; then
     exit 1
 fi
 
-RPC_URL="https://node-2.seismicdev.net/rpc"
+RPC_URL="https://testnet-1.seismictest.net/rpc"
 CONTRACT_PATH="src/SpreadMonitor.sol:SpreadMonitor"
 
-echo "Deploying SpreadMonitor to Seismic devnet..."
+echo "Deploying SpreadMonitor to Seismic Testnet..."
 
 DEPLOY_OUTPUT=$(sforge create \
     --rpc-url "$RPC_URL" \
@@ -31,7 +31,7 @@ TX_HASH=$(echo "$DEPLOY_OUTPUT" | grep "Transaction hash:" | awk '{print $3}')
 echo ""
 echo "Contract Address : $CONTRACT_ADDRESS"
 echo "Transaction Hash : $TX_HASH"
-echo "Explorer         : https://explorer-2.seismicdev.net/address/$CONTRACT_ADDRESS"
+echo "Explorer         : https://seismic-testnet.socialscan.io/address/$CONTRACT_ADDRESS"
 
 # 儲存合約地址
 echo "$CONTRACT_ADDRESS" > out/deployed_address.txt

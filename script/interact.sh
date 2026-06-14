@@ -13,8 +13,8 @@ if [ -z "$PRIVATE_KEY" ]; then
     exit 1
 fi
 
-RPC_URL="https://node-2.seismicdev.net/rpc"
-CONTRACT="0xE7e8863d840fcE15C40B68C21518fb5bDeF2d0c4"
+RPC_URL="https://gcp-2.seismictest.net/rpc"
+CONTRACT="0x072A3A0C04Cf8CDcaf5B4A73a4Ed4fF5A841531f"
 SCAST="$HOME/.seismic/bin/scast"
 
 # 用一個假的 pair address（私密欄位，對鏈上不可見）
@@ -83,5 +83,5 @@ echo ""
 
 echo "============================================"
 echo " 全部完成！"
-echo " Explorer: https://explorer-2.seismicdev.net/address/$CONTRACT"
+echo " Explorer : https://seismic-testnet.socialscan.io/address/$CONTRACT"
 echo "============================================"
