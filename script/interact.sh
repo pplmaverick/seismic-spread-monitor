@@ -13,7 +13,7 @@ if [ -z "$PRIVATE_KEY" ]; then
     exit 1
 fi
 
-RPC_URL="https://gcp-2.seismictest.net/rpc"
+RPC_URL="https://testnet-1.seismictest.net/rpc"
 CONTRACT="0xBdC53E50b1167cE1199bFaD54A034f7ab1741051"
 SCAST="$HOME/.seismic/bin/scast"
 
