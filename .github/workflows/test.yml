@@ -19,10 +19,13 @@ jobs:
 
       - name: Install sFoundry
         run: |
+          # Pin FOUNDRY_DIR so install script ignores XDG_CONFIG_HOME (set to
+          # /home/runner/.config on Ubuntu runners, which would shift the path)
+          export FOUNDRY_DIR="$HOME/.seismic"
           curl -L \
             -H "Accept: application/vnd.github.v3.raw" \
             "https://api.github.com/repos/SeismicSystems/seismic-foundry/contents/sfoundryup/install?ref=seismic" | bash
-          $HOME/.seismic/bin/sfoundryup
+          "$HOME/.seismic/bin/sfoundryup"
           echo "$HOME/.seismic/bin" >> $GITHUB_PATH
 
       - name: Build
