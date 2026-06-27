@@ -22,8 +22,7 @@ jobs:
           curl -L \
             -H "Accept: application/vnd.github.v3.raw" \
             "https://api.github.com/repos/SeismicSystems/seismic-foundry/contents/sfoundryup/install?ref=seismic" | bash
-          export PATH="$HOME/.seismic/bin:$PATH"
-          sfoundryup
+          $HOME/.seismic/bin/sfoundryup
           echo "$HOME/.seismic/bin" >> $GITHUB_PATH
 
       - name: Build
