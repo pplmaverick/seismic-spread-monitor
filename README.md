@@ -75,6 +75,67 @@ sforge build
 bash script/deploy.sh
 ```
 
+## Example Trading Pairs
+
+The monitor supports any trading pair — assign it a private `saddress` identifier; only you can see which address maps to which market.
+
+| Pair | Pair Address (shielded) | Threshold | Alert when |
+|---|---|---|---|
+| ETH/USDC | `0x000...001` | 100 bps | spread ≥ 100 |
+| BTC/USDC | `0x000...002` | 200 bps | spread ≥ 200 |
+| ARB/USDC | `0x000...003` | 50 bps | spread ≥ 50 |
+
+**ETH/USDC — register strategy (threshold = 100 bps)**
+```bash
+scast send --rpc-url https://gcp-2.seismictest.net/rpc --private-key $PRIVATE_KEY \
+  0xBdC53E50b1167cE1199bFaD54A034f7ab1741051 \
+  "setStrategy(saddress,suint256)" \
+  0x0000000000000000000000000000000000000001 100
+```
+
+**ETH/USDC — check spread**
+```bash
+scast send --rpc-url https://gcp-2.seismictest.net/rpc --private-key $PRIVATE_KEY \
+  0xBdC53E50b1167cE1199bFaD54A034f7ab1741051 \
+  "checkSpread(suint256)" 120
+```
+
+**BTC/USDC — register strategy (threshold = 200 bps)**
+```bash
+scast send --rpc-url https://gcp-2.seismictest.net/rpc --private-key $PRIVATE_KEY \
+  0xBdC53E50b1167cE1199bFaD54A034f7ab1741051 \
+  "setStrategy(saddress,suint256)" \
+  0x0000000000000000000000000000000000000002 200
+```
+
+**BTC/USDC — check spread**
+```bash
+scast send --rpc-url https://gcp-2.seismictest.net/rpc --private-key $PRIVATE_KEY \
+  0xBdC53E50b1167cE1199bFaD54A034f7ab1741051 \
+  "checkSpread(suint256)" 250
+```
+
+**ARB/USDC — register strategy (threshold = 50 bps)**
+```bash
+scast send --rpc-url https://gcp-2.seismictest.net/rpc --private-key $PRIVATE_KEY \
+  0xBdC53E50b1167cE1199bFaD54A034f7ab1741051 \
+  "setStrategy(saddress,suint256)" \
+  0x0000000000000000000000000000000000000003 50
+```
+
+**ARB/USDC — check spread**
+```bash
+scast send --rpc-url https://gcp-2.seismictest.net/rpc --private-key $PRIVATE_KEY \
+  0xBdC53E50b1167cE1199bFaD54A034f7ab1741051 \
+  "checkSpread(suint256)" 70
+```
+
+Or run all three pairs end-to-end in sequence:
+
+```bash
+bash script/interact.sh
+```
+
 ## Implementation Notes
 
 **`suint256` return values**
