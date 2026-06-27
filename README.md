@@ -1,5 +1,6 @@
 # Seismic Privacy Spread Monitor
 
+[![CI](https://github.com/pplmaverick/seismic-spread-monitor/actions/workflows/test.yml/badge.svg)](https://github.com/pplmaverick/seismic-spread-monitor/actions/workflows/test.yml)
 ![Seismic Testnet](https://img.shields.io/badge/Seismic_Testnet-5124-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 

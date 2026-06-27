@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    name: sforge test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install sFoundry
+        run: |
+          curl -L \
+            -H "Accept: application/vnd.github.v3.raw" \
+            "https://api.github.com/repos/SeismicSystems/seismic-foundry/contents/sfoundryup/install?ref=seismic" | bash
+          export PATH="$HOME/.seismic/bin:$PATH"
+          sfoundryup
+          echo "$HOME/.seismic/bin" >> $GITHUB_PATH
+
+      - name: Build
+        run: sforge build
+
+      - name: Test
+        run: sforge test -v
